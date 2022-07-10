@@ -9,7 +9,7 @@ type ThemeSession = {
 
 export type ThemeSessionResolver = (request: Request) => Promise<ThemeSession>;
 
-const createThemeSessionResolver = (
+export const createThemeSessionResolver = (
   cookieThemeSession: SessionStorage
 ): ThemeSessionResolver => {
   const resolver = async (request: Request): Promise<ThemeSession> => {
@@ -29,5 +29,3 @@ const createThemeSessionResolver = (
 
   return resolver;
 };
-
-export { createThemeSessionResolver };
