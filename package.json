@@ -10,8 +10,8 @@
 		"dev:remix": "remix dev",
 		"generate:css": "npx tailwindcss -i ./styles/tailwind.css -o ./app/tailwind.css",
 		"start": "remix-serve build",
-		"lint": "eslint app --ext mjs,js,jsx,ts,tsx --fix",
-		"format": "prettier --write \"app/**/*.{mjs,js,jsx,ts,tsx}\"",
+		"lint": "eslint app --ext ts,tsx --fix",
+		"format": "prettier --write \"app/**/*.{ts,tsx}\"",
 		"prepare": "husky install .github/husky",
 		"update": "pnpm update --latest --interactive",
 		"commit": "git-cz",
@@ -65,7 +65,7 @@
 		]
 	},
 	"lint-staged": {
-		"*.{mjs,js,jsx,ts,tsx}": "eslint --fix --ext mjs,js,jsx,ts,tsx"
+		"*.{ts,tsx}": "eslint --fix --ext ts,tsx"
 	},
 	"config": {
 		"commitizen": {
