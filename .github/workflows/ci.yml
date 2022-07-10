@@ -10,7 +10,7 @@ on:
 
 jobs:
   ci:
-    runs-on: [ubuntu]
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
