@@ -9,7 +9,9 @@ type ThemeSession = {
 
 export type ThemeSessionResolver = (request: Request) => Promise<ThemeSession>;
 
-const createThemeSessionResolver = (cookieThemeSession: SessionStorage): ThemeSessionResolver => {
+export const createThemeSessionResolver = (
+	cookieThemeSession: SessionStorage
+): ThemeSessionResolver => {
 	const resolver = async (request: Request): Promise<ThemeSession> => {
 		const session = await cookieThemeSession.getSession(request.headers.get('Cookie'));
 
@@ -25,5 +27,3 @@ const createThemeSessionResolver = (cookieThemeSession: SessionStorage): ThemeSe
 
 	return resolver;
 };
-
-export { createThemeSessionResolver };

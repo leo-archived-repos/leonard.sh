@@ -1,22 +1,23 @@
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
 import { createContext, useState, useContext, useEffect, useRef } from 'react';
 
-enum Theme {
+export enum Theme {
 	DARK = 'dark',
 	LIGHT = 'light'
 }
-const themes: Array<Theme> = Object.values(Theme);
+
+export const themes: Theme[] = Object.values(Theme);
 
 type ThemeContextType = [Theme | null, Dispatch<SetStateAction<Theme | null>>];
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 ThemeContext.displayName = 'ThemeContext';
 
-const prefersLightMQ = '(prefers-color-scheme: light)';
+const prefersDarkMQ = '(prefers-color-scheme: dark)';
 const getPreferredTheme = () =>
-	window.matchMedia(prefersLightMQ).matches ? Theme.LIGHT : Theme.DARK;
+	window.matchMedia(prefersDarkMQ).matches ? Theme.DARK : Theme.LIGHT;
 
-function ThemeProvider({
+export function ThemeProvider({
 	children,
 	specifiedTheme,
 	themeAction
@@ -55,14 +56,14 @@ function ThemeProvider({
 			return;
 		}
 
-		fetch(`${themeAction}`, {
+		void fetch(`${themeAction}`, {
 			method: 'POST',
 			body: JSON.stringify({ theme })
 		}).catch(console.error);
 	}, [theme, themeAction]);
 
 	useEffect(() => {
-		const mediaQuery = window.matchMedia(prefersLightMQ);
+		const mediaQuery = window.matchMedia(prefersDarkMQ);
 		const handleChange = () => {
 			setTheme(mediaQuery.matches ? Theme.LIGHT : Theme.DARK);
 		};
@@ -74,68 +75,16 @@ function ThemeProvider({
 	return <ThemeContext.Provider value={[theme, setTheme]}>{children}</ThemeContext.Provider>;
 }
 
-const clientThemeCode = `
-(() => {
-  const theme = window.matchMedia(${JSON.stringify(prefersLightMQ)}).matches
-    ? 'light'
-    : 'dark';
-  
-  const cl = document.documentElement.classList;
-	const themeAlreadyApplied = cl.contains('light') || cl.contains('dark');
-	
-	if (!themeAlreadyApplied) {
-		cl.add(theme);
-	}
-  
-  const meta = document.querySelector('meta[name=color-scheme]');
-  if (meta) {
-    if (theme === 'dark') {
-      meta.content = 'dark light';
-    } else if (theme === 'light') {
-      meta.content = 'light dark';
-    }
-  }
-})();
-`;
-
-function PreventFlashOnWrongTheme({ ssrTheme }: { ssrTheme: boolean }) {
-	const [theme] = useTheme();
-
-	return (
-		<>
-			{/*
-        On the server, "theme" might be `null`, so clientThemeCode ensures that
-        this is correct before hydration.
-      */}
-			<meta name="color-scheme" content={theme === 'light' ? 'light dark' : 'dark light'} />
-			{/*
-        If we know what the theme is from the server then we don't need
-        to do fancy tricks prior to hydration to make things match.
-      */}
-			{ssrTheme ? null : (
-				<script
-					// NOTE: we cannot use type="module" because that automatically makes
-					// the script "defer". That doesn't work for us because we need
-					// this script to run synchronously before the rest of the document
-					// is finished loading.
-					defer={true}
-					dangerouslySetInnerHTML={{ __html: clientThemeCode }}
-				/>
-			)}
-		</>
-	);
-}
-
-function useTheme() {
+export function useTheme() {
 	const context = useContext(ThemeContext);
-	if (context === undefined) {
+
+	if (!context) {
 		throw new Error('useTheme must be used within a ThemeProvider');
 	}
+
 	return context;
 }
 
-function isTheme(value: unknown): value is Theme {
+export function isTheme(value: unknown): value is Theme {
 	return typeof value === 'string' && themes.includes(value as Theme);
 }
-
-export { ThemeProvider, useTheme, themes, Theme, isTheme, PreventFlashOnWrongTheme };

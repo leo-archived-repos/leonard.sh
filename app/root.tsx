@@ -17,7 +17,7 @@ import nProgressStyles from 'nprogress/nprogress.css';
 
 import { useEffect } from 'react';
 
-import { ThemeProvider, useTheme, PreventFlashOnWrongTheme } from '~/theme';
+import { ThemeProvider, useTheme } from '~/theme';
 import { themeSessionResolver } from './sessions.server';
 
 export const meta: MetaFunction = () => ({
@@ -71,7 +71,6 @@ export default function AppWithProviders() {
 // the browser theme before hydration and will prevent a flash in browser.
 // The client code runs conditionally, it won't be rendered if we have a theme in session storage.
 function App() {
-	const data = useLoaderData();
 	const [theme] = useTheme();
 	const transition = useTransition();
 
@@ -85,7 +84,6 @@ function App() {
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width,initial-scale=1" />
 				<Meta />
-				<PreventFlashOnWrongTheme ssrTheme={Boolean(data.theme)} />
 				<Links />
 			</head>
 			<body className={theme || 'dark'}>
