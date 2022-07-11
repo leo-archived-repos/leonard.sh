@@ -8,7 +8,8 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				inter: ['Inter', ...defaultTheme.fontFamily.sans],
-				karla: ['Karla', ...defaultTheme.fontFamily.sans]
+				karla: ['Karla', ...defaultTheme.fontFamily.sans],
+				inconsolata: ['Inconsolata', ...defaultTheme.fontFamily.mono]
 			}
 		}
 	},

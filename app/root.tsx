@@ -1,4 +1,5 @@
 import styles from './tailwind.css';
+import catchBoundaryStyles from '../styles/catch-boundary.css';
 
 import type { LinksFunction, LoaderFunction, MetaFunction } from '@remix-run/node';
 import {
@@ -8,6 +9,7 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useCatch,
 	useLoaderData,
 	useTransition
 } from '@remix-run/react';
@@ -19,6 +21,7 @@ import { useEffect } from 'react';
 
 import { ThemeProvider, useTheme } from '~/theme';
 import { themeSessionResolver } from './sessions.server';
+import ErrorBoundary from './components/ErrorBoundary';
 
 export const meta: MetaFunction = () => ({
 	charset: 'utf-8',
@@ -34,9 +37,14 @@ export const links: LinksFunction = () => {
 		},
 		{
 			rel: 'stylesheet',
-			href: 'https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Karla:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap'
+			href: 'https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap'
+		},
+		{
+			rel: 'stylesheet',
+			href: 'https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;300;400;500;600;700;800;900&display=swap'
 		},
 		{ rel: 'stylesheet', href: styles },
+		{ rel: 'stylesheet', href: catchBoundaryStyles },
 		{ rel: 'stylesheet', href: nProgressStyles }
 	];
 };
@@ -48,6 +56,24 @@ export const loader: LoaderFunction = async ({ request }) => {
 		theme: getTheme()
 	};
 };
+
+export function CatchBoundary() {
+	const caught = useCatch();
+
+	return (
+		<html>
+			<head>
+				<title>Oops!</title>
+				<Meta />
+				<Links />
+			</head>
+			<body className="w-screen h-screen overflow-hidden text-green-400 bg-black font-inconsolata text-shadow">
+				<ErrorBoundary {...caught} />
+				<Scripts />
+			</body>
+		</html>
+	);
+}
 
 // Wrap your app with ThemeProvider.
 // `specifiedTheme` is the stored theme in the session storage.
